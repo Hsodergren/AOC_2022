@@ -1,3 +1,0 @@
-(executable
- (name d1)
- (libraries fmt))
