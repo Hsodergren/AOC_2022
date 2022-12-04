@@ -23,3 +23,4 @@ let window n seq =
 let lines_l f = lines f |> List.of_seq
 let sum = Seq.fold_left ( + ) 0
 let sum_f f = Seq.fold_left (fun acc v -> acc + f v) 0
+let count f seq = Seq.map (fun v -> if f v then 1 else 0) seq |> sum
