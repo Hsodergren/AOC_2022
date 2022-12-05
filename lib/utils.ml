@@ -1,11 +1,11 @@
-let lines f =
+let lines ?(skip_empty=true) f =
   let inc = In_channel.open_text f in
   let rec f () =
     match In_channel.input_line inc with
     | None ->
         In_channel.close inc;
         Seq.Nil
-    | Some "" -> f ()
+    | Some "" -> if skip_empty then f () else Seq.Cons ("", f)
     | Some l -> Seq.Cons (l, f)
   in
   f |> Seq.memoize
