@@ -10,6 +10,35 @@ let lines ?(skip_empty=true) f =
   in
   f |> Seq.memoize
 
+let chars f =
+  let inc = In_channel.open_text f in
+  let rec f () =
+    match In_channel.input_char inc with
+    | None ->
+       In_channel.close inc;
+       Seq.Nil
+    | Some char -> Seq.Cons (char, f)
+  in
+  f |> Seq.memoize
+
+let sliding_window n seq =
+  let rec rem_last l =
+    match l with
+    | [_] | [] -> []
+    | hd::tl -> hd::rem_last tl
+  in
+  let rec aux seq acc () =
+    match seq () with
+    | Seq.Nil -> Seq.Cons(List.rev acc, fun () -> Seq.Nil)
+    | Seq.Cons (v,seq) ->
+       if List.length acc == n
+       then
+         let new_acc = v::(rem_last acc) in
+         Seq.Cons (List.rev acc, aux seq new_acc)
+       else aux seq (v::acc) ()
+  in
+  aux seq []
+
 let window n seq =
   let rec aux values_left seq acc () =
     if values_left = 0 then Seq.Cons (acc, aux n seq [])

@@ -1,6 +1,6 @@
 open Cmdliner
 
-let modules = Lib.[ (1, D1.run); (2, D2.run); (3, D3.run); (4, D4.run); (5,D5.run) ]
+let modules = Lib.[ (1, D1.run); (2, D2.run); (3, D3.run); (4, D4.run); (5,D5.run); (6, D6.run) ]
 let day = Arg.(required & pos 0 (some int) None & info [] ~docv:"DAY")
 let input = Arg.(required & pos 1 (some string) None & info [] ~docv:"FILE")
 let dir = Arg.(value & opt dir "" & info [ "d"; "directory" ])

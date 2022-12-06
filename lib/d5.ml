@@ -55,7 +55,7 @@ let add i v state =
   IMap.update i (function | Some l -> Some (v::l) | None -> failwith "add unknown key") state
 
 let move from' to' state =
-  let v,state = remove from' state in
+  let v, state = remove from' state in
   add to' v state
 
 let rec move_n n from' to' state =
