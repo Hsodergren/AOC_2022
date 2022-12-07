@@ -21,6 +21,12 @@ let chars f =
   in
   f |> Seq.memoize
 
+let read_all f =
+  let inc = open_in f in
+  let res = In_channel.input_all inc in
+  In_channel.close inc;
+  res
+
 let sliding_window n seq =
   let rec rem_last l =
     match l with
