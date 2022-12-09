@@ -43,7 +43,7 @@ let parse seq =
 module PosSet = Set.Make(Pos)
 
 let simulate seq len =
-  let step_l l dir =
+  let step l dir =
     let rec aux l =
       match l with
       | hd1::hd2::tl ->
@@ -57,7 +57,7 @@ let simulate seq len =
     | [] -> failwith "error"
   in
   Seq.fold_left (fun (set,state) move ->
-      let last, state = step_l state move in
+      let last, state = step state move in
       PosSet.add last set, state
     ) (PosSet.empty, List.init len (fun _ -> Pos.zero)) seq
   |> fst
