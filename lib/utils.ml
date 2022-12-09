@@ -27,6 +27,11 @@ let read_all f =
   In_channel.close inc;
   res
 
+(* [repeat_n n v] returns a Seq.t with the value v repeated n times *)
+let rec repeat_n n v () =
+  if n = 0 then Seq.Nil
+  else Seq.Cons (v, repeat_n (n-1) v)
+
 let sliding_window n seq =
   let rec rem_last l =
     match l with
