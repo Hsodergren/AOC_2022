@@ -107,7 +107,6 @@ let part1 fs =
       ) fs 0
     in
     if size <= 100_000 then (
-      Fmt.pr "%d\n" size;
       counter := !counter + size;
       size
     ) else
@@ -120,7 +119,6 @@ let part2 fs update_size =
   let tot_size = fs_size fs in
   let unused = 70_000_000 - tot_size in
   let need_to_remove = update_size - unused in
-  Fmt.pr "%d %d %d\n" tot_size unused need_to_remove;
   let rec aux fs (best,size) =
     SMap.fold (fun _ t (best,orig_size) ->
         match t with
@@ -139,7 +137,6 @@ let run f =
   match Angstrom.parse_string ~consume:Angstrom.Consume.All Parser.cmds input with
   | Ok cmd ->
      let state = parse_t cmd in
-     Fmt.pr "%a\n" (SMap.pp String.pp pp) state;
      Fmt.pr "p1 = %d\n" (part1 state);
      Fmt.pr "p2 = %d\n" (part2 state 30_000_000)
   | Error err -> print_endline err
