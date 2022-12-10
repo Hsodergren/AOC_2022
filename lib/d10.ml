@@ -17,17 +17,15 @@ module Parse = struct
     parse_string ~consume:Consume.All parse string |> Result.get_ok
 end
 
-let expand_inst = function
-  | Noop -> Seq.return Noop
-  | Add n -> List.to_seq [ Noop; Add n ]
-
 let execute seq f =
   let rec aux seq x cycle =
     f cycle x;
     match seq () with
     | Seq.Nil -> ()
     | Seq.Cons (Noop, seq) -> aux seq x (cycle + 1)
-    | Seq.Cons (Add v, seq) -> aux seq (x + v) (cycle + 1)
+    | Seq.Cons (Add v, seq) ->
+        f (cycle + 1) x;
+        aux seq (x + v) (cycle + 2)
   in
   aux seq 1 1
 
@@ -56,9 +54,7 @@ let part2 seq =
   array
 
 let run f =
-  let seq =
-    Utils.lines f |> Seq.map Parse.parse |> Seq.concat_map expand_inst
-  in
+  let seq = Utils.lines f |> Seq.map Parse.parse in
   part1 seq |> Printf.printf "%d\n";
   part2 seq |> print_display;
   print_newline ()
