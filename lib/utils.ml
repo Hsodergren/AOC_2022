@@ -1,4 +1,21 @@
-let lines ?(skip_empty=true) f =
+module Parse = struct
+  open Angstrom
+
+  let int =
+    let* sign =
+      peek_char >>= function
+      | Some '-' -> advance 1 *> return (-1)
+      | Some '0' .. '9' -> return 1
+      | Some _ | None -> fail "error"
+    in
+    take_while1 (function '0' .. '9' -> true | _ -> false) >>| int_of_string
+    >>| fun n -> n * sign
+
+  let whitespace =
+    take_while (function ' ' -> true | _ -> false) >>| fun _ -> ()
+end
+
+let lines ?(skip_empty = true) f =
   let inc = In_channel.open_text f in
   let rec f () =
     match In_channel.input_line inc with
@@ -15,8 +32,8 @@ let chars f =
   let rec f () =
     match In_channel.input_char inc with
     | None ->
-       In_channel.close inc;
-       Seq.Nil
+        In_channel.close inc;
+        Seq.Nil
     | Some char -> Seq.Cons (char, f)
   in
   f |> Seq.memoize
@@ -29,24 +46,20 @@ let read_all f =
 
 (* [repeat_n n v] returns a Seq.t with the value v repeated n times *)
 let rec repeat_n n v () =
-  if n = 0 then Seq.Nil
-  else Seq.Cons (v, repeat_n (n-1) v)
+  if n = 0 then Seq.Nil else Seq.Cons (v, repeat_n (n - 1) v)
 
 let sliding_window n seq =
   let rec rem_last l =
-    match l with
-    | [_] | [] -> []
-    | hd::tl -> hd::rem_last tl
+    match l with [ _ ] | [] -> [] | hd :: tl -> hd :: rem_last tl
   in
   let rec aux seq acc () =
     match seq () with
-    | Seq.Nil -> Seq.Cons(List.rev acc, fun () -> Seq.Nil)
-    | Seq.Cons (v,seq) ->
-       if List.length acc == n
-       then
-         let new_acc = v::(rem_last acc) in
-         Seq.Cons (List.rev acc, aux seq new_acc)
-       else aux seq (v::acc) ()
+    | Seq.Nil -> Seq.Cons (List.rev acc, fun () -> Seq.Nil)
+    | Seq.Cons (v, seq) ->
+        if List.length acc == n then
+          let new_acc = v :: rem_last acc in
+          Seq.Cons (List.rev acc, aux seq new_acc)
+        else aux seq (v :: acc) ()
   in
   aux seq []
 
