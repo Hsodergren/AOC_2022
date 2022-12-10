@@ -29,7 +29,7 @@ let execute seq f =
     | Seq.Cons (Noop, seq) -> aux seq x (cycle + 1)
     | Seq.Cons (Add v, seq) -> aux seq (x + v) (cycle + 1)
   in
-  aux seq 2 1
+  aux seq 1 1
 
 let part1 seq =
   let v = ref 0 in
@@ -42,16 +42,17 @@ let part1 seq =
 let print_display arr =
   for i = 0 to 239 do
     if i mod 40 = 0 then print_newline ();
-    if arr.(i) = 0 then print_char '.' else print_char '#'
+    if arr.(i) = 0 then print_char ' ' else print_string "\u{2588}"
   done
 
 let part2 seq =
   let array = Array.init 240 (fun _ -> 0) in
   execute seq (fun cycle x ->
+      let pos = cycle - 1 in
       if cycle > 240 then ()
       else
-        let column = cycle mod 40 in
-        if abs (column - x) <= 1 then array.(cycle - 1) <- 1 else ());
+        let column = pos mod 40 in
+        if abs (column - x) <= 1 then array.(pos) <- 1 else ());
   array
 
 let run f =
